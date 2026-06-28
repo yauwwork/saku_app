@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/login/login_screen.dart';
 import 'package:saku_app/views/main/main_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserSession.init();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const LoginScreen(),
+      home: UserSession.isLoggedIn ? const MainScreen() : const LoginScreen(),
     );
   }
 }

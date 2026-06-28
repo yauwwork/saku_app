@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:saku_app/core/session/user_session.dart';
+import 'package:saku_app/views/login/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -15,166 +17,101 @@ class _ProfileScreenState
 
   @override
   Widget build(BuildContext context) {
+    final user = UserSession.currentUser;
 
     return Scaffold(
-
       backgroundColor: const Color(0xffF5F6FA),
-
       body: SafeArea(
-
         child: SingleChildScrollView(
-
           padding: const EdgeInsets.all(22),
-
           child: Column(
-
             children: [
-
-              const SizedBox(height:20),
-
+              const SizedBox(height: 20),
               Container(
-
-                height:110,
-                width:110,
-
+                height: 110,
+                width: 110,
                 decoration: BoxDecoration(
-
                   shape: BoxShape.circle,
-
                   border: Border.all(
                     color: Colors.white,
-                    width:5,
+                    width: 5,
                   ),
-
-                  image: const DecorationImage(
-
+                  image: DecorationImage(
                     image: NetworkImage(
-                      "https://i.pravatar.cc/200",
+                      user?.avatar ?? 'https://i.pravatar.cc/200',
                     ),
-
                     fit: BoxFit.cover,
-
                   ),
-
                 ),
-
               ),
-
-              const SizedBox(height:18),
-
-              const Text(
-
-                "Muhamad Wahyu",
-
-                style: TextStyle(
-
+              const SizedBox(height: 18),
+              Text(
+                user?.name ?? 'Guest User',
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
-
-                  fontSize:28,
-
+                  fontSize: 28,
                 ),
-
               ),
-
-              const SizedBox(height:5),
-
-              const Text(
-
-                "wahyu@email.com",
-
-                style: TextStyle(
+              const SizedBox(height: 5),
+              Text(
+                user?.email ?? 'guest@example.com',
+                style: const TextStyle(
                   color: Colors.grey,
-                  fontSize:17,
+                  fontSize: 17,
                 ),
-
               ),
-
-              const SizedBox(height:30),
-
+              const SizedBox(height: 30),
               Container(
-
                 width: double.infinity,
-
                 padding: const EdgeInsets.all(24),
-
                 decoration: BoxDecoration(
-
                   gradient: const LinearGradient(
-
-                    colors:[
+                    colors: [
                       Color(0xff3B82F6),
                       Color(0xff2563EB),
                     ],
-
                   ),
-
-                  borderRadius:
-                      BorderRadius.circular(24),
-
+                  borderRadius: BorderRadius.circular(24),
                 ),
-
                 child: Column(
-
-                  children: [
-
-                    const Text(
-
+                  children: const [
+                    Text(
                       "Current Balance",
-
                       style: TextStyle(
                         color: Colors.white70,
                       ),
-
                     ),
-
-                    const SizedBox(height:10),
-
-                    const Text(
-
-                      "\$12,450.75",
-
+                    SizedBox(height: 10),
+                    Text(
+                      "\$0",
                       style: TextStyle(
-
                         color: Colors.white,
-
                         fontWeight: FontWeight.bold,
-
-                        fontSize:34,
-
+                        fontSize: 34,
                       ),
-
                     ),
-
                   ],
                 ),
               ),
-
-              const SizedBox(height:30),
-
-                            _menuTile(
+              const SizedBox(height: 30),
+              _menuTile(
                 icon: Icons.person_outline,
                 title: "Edit Profile",
                 onTap: () {},
               ),
-
               const SizedBox(height: 14),
-
               _menuTile(
                 icon: Icons.notifications_none,
                 title: "Notifications",
                 onTap: () {},
               ),
-
               const SizedBox(height: 14),
-
               _menuTile(
                 icon: Icons.lock_outline,
                 title: "Security",
                 onTap: () {},
               ),
-
               const SizedBox(height: 14),
-
               SwitchListTile(
                 value: false,
                 onChanged: (v) {},
@@ -195,25 +132,19 @@ class _ProfileScreenState
                   ),
                 ),
               ),
-
               const SizedBox(height: 14),
-
               _menuTile(
                 icon: Icons.help_outline,
                 title: "Help Center",
                 onTap: () {},
               ),
-
               const SizedBox(height: 14),
-
               _menuTile(
                 icon: Icons.info_outline,
                 title: "About App",
                 onTap: () {},
               ),
-
               const SizedBox(height: 35),
-
               SizedBox(
                 width: double.infinity,
                 height: 58,
@@ -222,11 +153,20 @@ class _ProfileScreenState
                     backgroundColor: Colors.red,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(18),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await UserSession.clear();
+                    if (!mounted) return;
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LoginScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  },
                   icon: const Icon(
                     Icons.logout,
                     color: Colors.white,
@@ -241,7 +181,6 @@ class _ProfileScreenState
                   ),
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),
@@ -280,9 +219,7 @@ class _ProfileScreenState
               icon,
               color: const Color(0xff2563EB),
             ),
-
             const SizedBox(width: 18),
-
             Expanded(
               child: Text(
                 title,
@@ -292,7 +229,6 @@ class _ProfileScreenState
                 ),
               ),
             ),
-
             const Icon(
               Icons.arrow_forward_ios,
               size: 16,

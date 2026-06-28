@@ -292,7 +292,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         );
                                       } else {
-                                        UserSession.currentUser = user;
+                                        await UserSession.save(user);
                                         await Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(

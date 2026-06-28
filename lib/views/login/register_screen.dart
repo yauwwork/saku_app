@@ -382,7 +382,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         email: emailController.text.trim(),
                                         password: passwordController.text,
                                       );
-                                      UserSession.currentUser = newUser;
+                                      await UserSession.save(newUser);
                                       await Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
