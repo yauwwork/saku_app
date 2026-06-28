@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:saku_app/core/models/transaction_model.dart';
+import 'package:saku_app/core/networks/api_service.dart';
+import 'package:saku_app/core/session/user_session.dart';
+import 'package:saku_app/views/main/main_screen.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -14,6 +18,7 @@ class _AddTransactionScreenState
   final _formKey = GlobalKey<FormState>();
 
   bool isIncome = true;
+  bool isLoading = false;
 
   final amountController = TextEditingController();
   final noteController = TextEditingController();
@@ -357,34 +362,75 @@ class _AddTransactionScreenState
                           BorderRadius.circular(18),
                     ),
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!
-                        .validate()) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(
-                        SnackBar(
-                          backgroundColor:
-                              isIncome
-                                  ? Colors.green
-                                  : Colors.red,
-                          content: Text(
-                            isIncome
-                                ? "Income Added Successfully"
-                                : "Expense Added Successfully",
-                          ),
-                        ),
-                      );
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+                          if (UserSession.currentUser == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('User tidak ditemukan. Silakan login ulang.'),
+                              ),
+                            );
+                            return;
+                          }
 
-                      amountController.clear();
-                      noteController.clear();
+                          final parsedAmount = int.tryParse(amountController.text.trim());
+                          if (parsedAmount == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Masukkan jumlah yang valid'),
+                              ),
+                            );
+                            return;
+                          }
 
-                      setState(() {
-                        selectedCategory = categories.first;
-                        selectedDate = DateTime.now();
-                        isIncome = true;
-                      });
-                    }
-                  },
+                          setState(() {
+                            isLoading = true;
+                          });
+
+                          final transaction = TransactionModel(
+                            id: '',
+                            userId: UserSession.currentUser!.id,
+                            title: noteController.text.trim().isEmpty
+                                ? selectedCategory
+                                : noteController.text.trim(),
+                            amount: parsedAmount,
+                            type: isIncome ? 'income' : 'expense',
+                            category: selectedCategory,
+                            date: selectedDate.millisecondsSinceEpoch ~/ 1000,
+                          );
+
+                          try {
+                            await ApiService.createTransaction(transaction: transaction);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor:
+                                    isIncome ? Colors.green : Colors.red,
+                                content: Text(
+                                  isIncome
+                                      ? "Income Added Successfully"
+                                      : "Expense Added Successfully",
+                                ),
+                              ),
+                            );
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const MainScreen()));
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Gagal menyimpan transaksi: ${e.toString()}'),
+                              ),
+                            );
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            }
+                          }
+                        },
                   child: Text(
                     isIncome
                         ? "Save Income"

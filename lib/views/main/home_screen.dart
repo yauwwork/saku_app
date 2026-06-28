@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:saku_app/core/models/transaction_model.dart';
+import 'package:saku_app/core/networks/api_service.dart';
+import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/main/add_transaction_screen.dart';
 import 'package:saku_app/views/main/profil_screen.dart';
 import 'package:saku_app/views/main/statistic_screen.dart';
@@ -13,40 +16,56 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
 
-  final List<TransactionModel> transactions = [
-    TransactionModel(
-      title: "Spotify Premium",
-      category: "Entertainment",
-      amount: -59000,
-      icon: Icons.music_note,
-      color: Colors.green,
-      date: "Today",
-    ),
-    TransactionModel(
-      title: "Salary",
-      category: "Income",
-      amount: 8500000,
-      icon: Icons.account_balance_wallet,
-      color: Colors.blue,
-      date: "Yesterday",
-    ),
-    TransactionModel(
-      title: "Starbucks",
-      category: "Food",
-      amount: -78000,
-      icon: Icons.local_cafe,
-      color: Colors.orange,
-      date: "Yesterday",
-    ),
-    TransactionModel(
-      title: "Netflix",
-      category: "Subscription",
-      amount: -169000,
-      icon: Icons.movie,
-      color: Colors.red,
-      date: "Apr 20",
-    ),
-  ];
+  List<TransactionModel> transactions = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTransactions();
+  }
+
+  Future<void> _loadTransactions() async {
+    if (UserSession.currentUser == null) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final data = await ApiService.getTransactionsByUser(UserSession.currentUser!.id);
+      setState(() {
+        transactions = data;
+      });
+    } catch (_) {
+      setState(() {
+        transactions = [];
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  int get totalIncome {
+    return transactions.fold<int>(0, (sum, item) {
+      return sum + (item.type.toLowerCase() == 'income' ? item.amount : 0);
+    });
+  }
+
+  int get totalExpense {
+    return transactions.fold<int>(0, (sum, item) {
+      return sum + (item.type.toLowerCase() == 'expense' ? item.amount : 0);
+    });
+  }
+
+  int get totalBalance {
+    return transactions.fold<int>(0, (sum, item) {
+      return sum + (item.type.toLowerCase() == 'income' ? item.amount : -item.amount);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +75,14 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff2563EB),
         elevation: 5,
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push<bool?>(
             context,
             MaterialPageRoute(builder: (_) => const AddTransactionScreen()),
           );
+          if (result == true) {
+            _loadTransactions();
+          }
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -78,8 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 55,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
-                      image: const DecorationImage(
-                        image: NetworkImage("https://i.pravatar.cc/150"),
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          UserSession.currentUser?.avatar ?? 'https://i.pravatar.cc/150',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -90,17 +114,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
+                      children: [
+                        const Text(
                           "Good Morning 👋",
                           style: TextStyle(color: Colors.grey, fontSize: 16),
                         ),
 
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
 
                         Text(
-                          "Muhamad Wahyu",
-                          style: TextStyle(
+                          UserSession.currentUser?.name ?? 'Guest',
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 22,
                           ),
@@ -155,9 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     const SizedBox(height: 16),
 
-                    const Text(
-                      "\$12,450.75",
-                      style: TextStyle(
+                    Text(
+                      '\$${totalBalance.toString()}',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 36,
@@ -172,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _balanceItem(
                             icon: Icons.arrow_downward,
                             title: "Income",
-                            amount: "\$8,500",
+                            amount: "\$${totalIncome}",
                             iconColor: Colors.green,
                           ),
                         ),
@@ -181,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _balanceItem(
                             icon: Icons.arrow_upward,
                             title: "Expense",
-                            amount: "\$2,430",
+                            amount: "\$${totalExpense}",
                             iconColor: Colors.red,
                           ),
                         ),
@@ -360,15 +384,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 10),
 
-              ListView.separated(
-                itemCount: transactions.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                separatorBuilder: (_, __) => const SizedBox(height: 14),
-                itemBuilder: (context, index) {
-                  final item = transactions[index];
+              if (isLoading) ...[
+                const SizedBox(height: 24),
+                const Center(child: CircularProgressIndicator()),
+              ] else if (transactions.isEmpty) ...[
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: const Text(
+                    'Tidak ada transaksi untuk saat ini',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ),
+              ] else ...[
+                ListView.separated(
+                  itemCount: transactions.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  separatorBuilder: (_, __) => const SizedBox(height: 14),
+                  itemBuilder: (context, index) {
+                    final item = transactions[index];
+                    final isIncome = item.type.toLowerCase() == 'income';
 
-                  return Container(
+                    return Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -387,10 +430,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           height: 56,
                           width: 56,
                           decoration: BoxDecoration(
-                            color: item.color.withOpacity(.12),
+                            color: item.displayColor.withOpacity(.12),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Icon(item.icon, color: item.color, size: 28),
+                          child: Icon(item.displayIcon, color: item.displayColor, size: 28),
                         ),
 
                         const SizedBox(width: 16),
@@ -424,13 +467,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              item.amount > 0
+                              isIncome
                                   ? "+ \$${item.amount}"
-                                  : "- \$${item.amount.abs()}",
+                                  : "- \$${item.amount}",
                               style: TextStyle(
-                                color: item.amount > 0
-                                    ? Colors.green
-                                    : Colors.red,
+                                color: isIncome ? Colors.green : Colors.red,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
@@ -439,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 4),
 
                             Text(
-                              item.date,
+                              item.formattedDate,
                               style: const TextStyle(color: Colors.grey),
                             ),
                           ],
@@ -451,7 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 90),
-            ],
+            ],]
           ),
         ),
       ),
@@ -566,20 +607,3 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class TransactionModel {
-  final String title;
-  final String category;
-  final int amount;
-  final IconData icon;
-  final Color color;
-  final String date;
-
-  TransactionModel({
-    required this.title,
-    required this.category,
-    required this.amount,
-    required this.icon,
-    required this.color,
-    required this.date,
-  });
-}

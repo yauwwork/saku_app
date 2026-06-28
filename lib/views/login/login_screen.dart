@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:saku_app/core/extension/navigator.dart';
+import 'package:saku_app/core/networks/api_service.dart';
+import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/login/register_screen.dart';
-import 'package:saku_app/views/main/home_screen.dart';
+import 'package:saku_app/views/main/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool rememberMe = false;
   bool obscurePassword = true;
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -264,28 +267,73 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               elevation: 0,
                             ),
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const HomeScreen(),
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    if (!_formKey.currentState!.validate()) {
+                                      return;
+                                    }
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    try {
+                                      final user = await ApiService.loginUser(
+                                        emailController.text.trim(),
+                                        passwordController.text,
+                                      );
+
+                                      if (user == null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Email atau password salah',
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        UserSession.currentUser = user;
+                                        await Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => const MainScreen(),
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Login gagal: ${e.toString()}',
+                                          ),
+                                        ),
+                                      );
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }
+                                    }
+                                  },
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                );
-                              }
-                            },
-                            // onPressed: () {
-                            //   if (_formKey.currentState!
-                            //       .validate()) {}
-                            // },
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
                           ),
                         ),
 

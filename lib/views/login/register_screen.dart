@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:saku_app/core/networks/api_service.dart';
+import 'package:saku_app/core/session/user_session.dart';
+import 'package:saku_app/core/extension/navigator.dart';
+import 'package:saku_app/views/main/main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,6 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
   bool agreeTerms = false;
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -339,53 +344,85 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     BorderRadius.circular(14),
                               ),
                             ),
-                            onPressed: () {
-                              if (_formKey.currentState!
-                                  .validate()) {
-                                if (!agreeTerms) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Please agree to the Terms & Privacy Policy",
-                                      ),
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    if (!_formKey.currentState!.validate()) {
+                                      return;
+                                    }
+                                    if (!agreeTerms) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Please agree to the Terms & Privacy Policy",
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    if (passwordController.text !=
+                                        confirmPasswordController.text) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Password doesn't match",
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    try {
+                                      final newUser = await ApiService.registerUser(
+                                        name: fullNameController.text.trim(),
+                                        email: emailController.text.trim(),
+                                        password: passwordController.text,
+                                      );
+                                      UserSession.currentUser = newUser;
+                                      await Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const MainScreen(),
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Register gagal: ${e.toString()}',
+                                          ),
+                                        ),
+                                      );
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }
+                                    }
+                                  },
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
                                     ),
-                                  );
-                                  return;
-                                }
-
-                                if (passwordController.text !=
-                                    confirmPasswordController
-                                        .text) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Password doesn't match",
-                                      ),
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Register Success",
+                                  )
+                                : const Text(
+                                    "Create Account",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                );
-                              }
-                            },
-                            child: const Text(
-                              "Create Account",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                           ),
                         ),
 
