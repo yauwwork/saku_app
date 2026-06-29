@@ -54,23 +54,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int get totalIncome {
-    return transactions.fold<int>(0, (sum, item) {
-      return sum + (item.type.toLowerCase() == 'income' ? item.amount : 0);
-    });
-  }
+  return transactions.fold<int>(0, (sum, item) {
+    return sum + (item.isIncome ? item.amount : 0);
+  });
+}
 
-  int get totalExpense {
-    return transactions.fold<int>(0, (sum, item) {
-      return sum + (item.type.toLowerCase() == 'expense' ? item.amount : 0);
-    });
-  }
+int get totalExpense {
+  return transactions.fold<int>(0, (sum, item) {
+    return sum + (item.isIncome ? 0 : item.amount);
+  });
+}
 
-  int get totalBalance {
-    return transactions.fold<int>(0, (sum, item) {
-      return sum +
-          (item.type.toLowerCase() == 'income' ? item.amount : -item.amount);
-    });
-  }
+int get totalBalance {
+  return totalIncome - totalExpense;
+}
 
   ImageProvider _avatarProvider(String? avatar, {required String fallback}) {
     if (avatar != null && avatar.isNotEmpty) {
@@ -240,154 +237,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-
-                    // Row(
-                    //   children: [
-                    //     Expanded(
-                    //       child: Container(
-                    //         padding: const EdgeInsets.all(15),
-
-                    //         decoration: BoxDecoration(
-                    //           color: Colors.white24,
-                    //           borderRadius: BorderRadius.circular(18),
-                    //         ),
-
-                    //         child: Row(
-                    //           children: [
-                    //             Container(
-                    //               height: 45,
-                    //               width: 45,
-                    //               decoration: const BoxDecoration(
-                    //                 color: Colors.white,
-                    //                 shape: BoxShape.circle,
-                    //               ),
-                    //               child: const Icon(
-                    //                 Icons.arrow_downward,
-                    //                 color: Colors.green,
-                    //               ),
-                    //             ),
-
-                    //             const SizedBox(width: 12),
-
-                    //             Column(
-                    //               crossAxisAlignment: CrossAxisAlignment.start,
-                    //               children: const [
-                    //                 Text(
-                    //                   "Income",
-                    //                   style: TextStyle(color: Colors.white70),
-                    //                 ),
-
-                    //                 SizedBox(height: 4),
-
-                    //                 Text(
-                    //                   "\$8,500",
-                    //                   style: TextStyle(
-                    //                     color: Colors.white,
-                    //                     fontWeight: FontWeight.bold,
-                    //                     fontSize: 18,
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ),
-
-                    //     const SizedBox(width: 16),
-
-                    //     Expanded(
-                    //       child: Container(
-                    //         padding: const EdgeInsets.all(15),
-
-                    //         decoration: BoxDecoration(
-                    //           color: Colors.white24,
-                    //           borderRadius: BorderRadius.circular(18),
-                    //         ),
-
-                    //         child: Row(
-                    //           children: [
-                    //             Container(
-                    //               height: 45,
-                    //               width: 45,
-                    //               decoration: const BoxDecoration(
-                    //                 color: Colors.white,
-                    //                 shape: BoxShape.circle,
-                    //               ),
-                    //               child: const Icon(
-                    //                 Icons.arrow_upward,
-                    //                 color: Colors.red,
-                    //               ),
-                    //             ),
-
-                    //             const SizedBox(width: 12),
-
-                    //             Column(
-                    //               crossAxisAlignment: CrossAxisAlignment.start,
-
-                    //               children: const [
-                    //                 Text(
-                    //                   "Expense",
-                    //                   style: TextStyle(color: Colors.white70),
-                    //                 ),
-
-                    //                 SizedBox(height: 4),
-
-                    //                 Text(
-                    //                   "\$2,430",
-                    //                   style: TextStyle(
-                    //                     color: Colors.white,
-                    //                     fontWeight: FontWeight.bold,
-                    //                     fontSize: 18,
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
 
               const SizedBox(height: 28),
-
-              ///================ QUICK ACTION =================
-              Row(
-                children: [
-                  Expanded(
-                    child: _actionCard(
-                      icon: Icons.arrow_downward,
-                      title: "Income",
-                      subtitle: "Add Income",
-                      color: Colors.green,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: _actionCard(
-                      icon: Icons.arrow_upward,
-                      title: "Expense",
-                      subtitle: "Add Expense",
-                      color: Colors.red,
-                    ),
-                  ),
-                  // const SizedBox(width: 14),
-                  // Expanded(
-                  //   child: _actionCard(
-                  //     icon: Icons.swap_horiz,
-                  //     title: "Transfer",
-                  //     subtitle: "Transfer",
-                  //     color: Colors.orange,
-                  //   ),
-                  // ),
-                ],
-              ),
-
-              const SizedBox(height: 30),
 
               ///================ RECENT TRANSACTION =================
               Row(

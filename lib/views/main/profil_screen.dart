@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:saku_app/core/networks/api_service.dart';
 import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/login/login_screen.dart';
 import 'package:saku_app/views/main/edit_profil.screen.dart';
@@ -13,6 +14,52 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool isLoading = true;
+  int totalBalance = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBalance();
+  }
+
+  Future<void> _loadBalance() async {
+    final user = UserSession.currentUser;
+
+    if (user == null) return;
+
+    try {
+      final transactions = await ApiService.getTransactionsByUser(user.id);
+
+      int balance = 0;
+
+      for (final item in transactions) {
+        if (item.isIncome) {
+          balance += item.amount;
+        } else {
+          balance -= item.amount;
+        }
+      }
+
+      setState(() {
+        totalBalance = balance;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  String formatCurrency(int value) {
+    final formatted = value.toString().replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => '.',
+    );
+    return 'Rp $formatted';
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = UserSession.currentUser;
@@ -67,19 +114,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(color: Colors.white70),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Rp 12.450,75',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 34,
-                      ),
-                    ),
+                    isLoading
+                        ? const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            formatCurrency(totalBalance),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 34,
+                            ),
+                          ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 28),
 
               _menuTile(
                 icon: Icons.person_outline,
@@ -102,59 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
 
-              const SizedBox(height: 14),
-
-              _menuTile(
-                icon: Icons.notifications_none,
-                title: 'Notifikasi',
-                onTap: () {},
-              ),
-
-              const SizedBox(height: 14),
-
-              _menuTile(
-                icon: Icons.lock_outline,
-                title: 'Keamanan',
-                onTap: () {},
-              ),
-
-              const SizedBox(height: 14),
-
-              SwitchListTile(
-                value: false,
-                onChanged: (v) {},
-                activeColor: const Color(0xff2563EB),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                tileColor: Colors.white,
-                secondary: const Icon(
-                  Icons.dark_mode_outlined,
-                  color: Color(0xff2563EB),
-                ),
-                title: const Text(
-                  'Mode Gelap',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              _menuTile(
-                icon: Icons.help_outline,
-                title: 'Pusat Bantuan',
-                onTap: () {},
-              ),
-
-              const SizedBox(height: 14),
-
-              _menuTile(
-                icon: Icons.info_outline,
-                title: 'Tentang Aplikasi',
-                onTap: () {},
-              ),
-
-              const SizedBox(height: 35),
+              const SizedBox(height: 24),
 
               SizedBox(
                 width: double.infinity,
