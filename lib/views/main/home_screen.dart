@@ -5,6 +5,7 @@ import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/main/add_transaction_screen.dart';
 import 'package:saku_app/views/main/profil_screen.dart';
 import 'package:saku_app/views/main/statistic_screen.dart';
+import 'package:saku_app/views/main/transaction_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,7 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final data = await ApiService.getTransactionsByUser(UserSession.currentUser!.id);
+      final data = await ApiService.getTransactionsByUser(
+        UserSession.currentUser!.id,
+      );
       setState(() {
         transactions = data;
       });
@@ -63,7 +66,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int get totalBalance {
     return transactions.fold<int>(0, (sum, item) {
-      return sum + (item.type.toLowerCase() == 'income' ? item.amount : -item.amount);
+      return sum +
+          (item.type.toLowerCase() == 'income' ? item.amount : -item.amount);
     });
   }
 
@@ -102,7 +106,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(18),
                       image: DecorationImage(
                         image: NetworkImage(
-                          UserSession.currentUser?.avatar ?? 'https://i.pravatar.cc/150',
+                          UserSession.currentUser?.avatar ??
+                              'https://i.pravatar.cc/150',
                         ),
                         fit: BoxFit.cover,
                       ),
@@ -411,88 +416,109 @@ class _HomeScreenState extends State<HomeScreen> {
                     final item = transactions[index];
                     final isIncome = item.type.toLowerCase() == 'income';
 
-                    return Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
+                    return InkWell(
                       borderRadius: BorderRadius.circular(22),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(.08),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 56,
-                          width: 56,
-                          decoration: BoxDecoration(
-                            color: item.displayColor.withOpacity(.12),
-                            borderRadius: BorderRadius.circular(16),
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                TransactionDetailScreen(transaction: item),
                           ),
-                          child: Icon(item.displayIcon, color: item.displayColor, size: 28),
-                        ),
+                        );
 
-                        const SizedBox(width: 16),
-
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-
-                              const SizedBox(height: 4),
-
-                              Text(
-                                item.category,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              isIncome
-                                  ? "+ \$${item.amount}"
-                                  : "- \$${item.amount}",
-                              style: TextStyle(
-                                color: isIncome ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-
-                            const SizedBox(height: 4),
-
-                            Text(
-                              item.formattedDate,
-                              style: const TextStyle(color: Colors.grey),
+                        if (result == true) {
+                          _loadTransactions();
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(.08),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 56,
+                              width: 56,
+                              decoration: BoxDecoration(
+                                color: item.displayColor.withOpacity(.12),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Icon(
+                                item.displayIcon,
+                                color: item.displayColor,
+                                size: 28,
+                              ),
+                            ),
 
-              const SizedBox(height: 90),
-            ],]
+                            const SizedBox(width: 16),
+
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 4),
+
+                                  Text(
+                                    item.category,
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  isIncome
+                                      ? "+ \$${item.amount}"
+                                      : "- \$${item.amount}",
+                                  style: TextStyle(
+                                    color: isIncome ? Colors.green : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 4),
+
+                                Text(
+                                  item.formattedDate,
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 90),
+              ],
+            ],
           ),
         ),
       ),
@@ -606,4 +632,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
