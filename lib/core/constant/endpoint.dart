@@ -27,17 +27,24 @@ class Endpoint {
 
   /// GET - Ambil semua transaksi
   /// POST - Tambah transaksi
-  static const String transactions = "$baseUrl/transaction";
+static String transactions(String userId) =>
+    "$baseUrl/users/$userId/transaction";
 
-  /// GET - Detail transaksi
-  static String transactionById(String id) =>
-      "$baseUrl/transaction/$id";
+static String transactionById(
+  String userId,
+  String transactionId,
+) =>
+    "$baseUrl/users/$userId/transaction/$transactionId";
 
-  /// PUT - Edit transaksi
-  static String updateTransaction(String id) =>
-      "$baseUrl/transaction/$id";
+static String updateTransaction(
+  String userId,
+  String transactionId,
+) =>
+    "$baseUrl/users/$userId/transaction/$transactionId";
 
-  /// DELETE - Hapus transaksi
-  static String deleteTransaction(String id) =>
-      "$baseUrl/transaction/$id";
+static String deleteTransaction(
+  String userId,
+  String transactionId,
+) =>
+    "$baseUrl/users/$userId/transaction/$transactionId";
 }

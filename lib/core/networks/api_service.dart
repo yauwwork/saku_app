@@ -52,56 +52,96 @@ class ApiService {
     throw Exception('Failed to register user');
   }
 
-  static Future<UserModel?> loginUser(
-    String email,
-    String password,
-  ) async {
+  static Future<UserModel?> loginUser(String email, String password) async {
     final users = await getUsers();
     try {
-      return users.firstWhere(
-        (user) {
-          final loginKey = user.email.isNotEmpty ? user.email : user.name;
-          return loginKey.toLowerCase() == email.toLowerCase() &&
-              user.password == password;
-        },
-      );
+      return users.firstWhere((user) {
+        final loginKey = user.email.isNotEmpty ? user.email : user.name;
+        return loginKey.toLowerCase() == email.toLowerCase() &&
+            user.password == password;
+      });
     } catch (_) {
       return null;
     }
   }
 
   static Future<List<TransactionModel>> getTransactionsByUser(
-      String userId) async {
-    final uri = Uri.parse(Endpoint.transactions).replace(queryParameters: {
-      'userId': userId,
-    });
+    String userId,
+  ) async {
+    final uri = Uri.parse(Endpoint.transactions(userId));
+
     final response = await client.get(uri);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
       return List<TransactionModel>.from(
         (data as List).map((item) => TransactionModel.fromJson(item)),
       );
     }
 
-    throw Exception('Failed to load transactions');
+    throw Exception("Failed to load transactions");
   }
 
   static Future<TransactionModel> createTransaction({
     required TransactionModel transaction,
   }) async {
-    final uri = Uri.parse(Endpoint.transactions);
+    final uri = Uri.parse(Endpoint.transactions(transaction.userId));
+
     final response = await client.post(
       uri,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(transaction.toJson()),
     );
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return TransactionModel.fromJson(data);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return TransactionModel.fromJson(jsonDecode(response.body));
     }
 
-    throw Exception('Failed to save transaction');
+    throw Exception("Failed to save transaction");
+  }
+
+  static Future<TransactionModel> updateTransaction({
+    required TransactionModel transaction,
+  }) async {
+    final uri = Uri.parse(
+      Endpoint.updateTransaction(transaction.userId, transaction.id),
+    );
+
+    final response = await client.put(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(transaction.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      return TransactionModel.fromJson(jsonDecode(response.body));
+    }
+
+    throw Exception("Failed to update transaction");
+  }
+
+  static Future<void> deleteTransaction({
+    required String userId,
+    required String transactionId,
+  }) async {
+    final uri = Uri.parse(Endpoint.deleteTransaction(userId, transactionId));
+
+    print("========== DELETE ==========");
+    print("USER ID : $userId");
+    print("TRANS ID: $transactionId");
+    print("URL     : $uri");
+
+    final response = await client.delete(uri);
+
+    print("STATUS  : ${response.statusCode}");
+    print("BODY    : ${response.body}");
+    print("============================");
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      return;
+    }
+
+    throw Exception("Delete gagal ${response.statusCode}\n${response.body}");
   }
 }

@@ -185,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 16),
 
                     Text(
-                      '\$${totalBalance.toString()}',
+                      _formatCurrency(totalBalance),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _balanceItem(
                             icon: Icons.arrow_downward,
                             title: "Income",
-                            amount: "\$${totalIncome}",
+                            amount: _formatCurrency(totalIncome),
                             iconColor: Colors.green,
                           ),
                         ),
@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _balanceItem(
                             icon: Icons.arrow_upward,
                             title: "Expense",
-                            amount: "\$${totalExpense}",
+                            amount: _formatCurrency(totalExpense),
                             iconColor: Colors.red,
                           ),
                         ),
@@ -492,8 +492,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   isIncome
-                                      ? "+ \$${item.amount}"
-                                      : "- \$${item.amount}",
+                                      ? "+ ${_formatCurrency(item.amount)}"
+                                      : "- ${_formatCurrency(item.amount)}",
                                   style: TextStyle(
                                     color: isIncome ? Colors.green : Colors.red,
                                     fontWeight: FontWeight.bold,
@@ -523,6 +523,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  String _formatCurrency(int value) {
+    final formatted = value.toString().replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => '.',
+    );
+    return 'Rp $formatted';
   }
 
   Widget _balanceItem({

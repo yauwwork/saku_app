@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:saku_app/core/models/transaction_model.dart';
+import 'package:saku_app/core/networks/api_service.dart';
+import 'package:saku_app/views/main/edit_transaction_screen.dart';
+import 'package:saku_app/views/main/widgets/delet_dialog.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final TransactionModel transaction;
@@ -56,7 +59,7 @@ class TransactionDetailScreen extends StatelessWidget {
             const SizedBox(height: 10),
 
             Text(
-              "${transaction.type.toLowerCase() == 'income' ? '+' : '-'} \$${transaction.amount}",
+              "${transaction.type.toLowerCase() == 'income' ? '+' : '-'} ${_formatCurrency(transaction.amount)}",
               style: TextStyle(
                 fontSize: 30,
                 color: transaction.type.toLowerCase() == "income"
@@ -125,7 +128,6 @@ class TransactionDetailScreen extends StatelessWidget {
                   const Divider(height: 30),
 
                   _buildItem("Type", transaction.type, Icons.swap_vert),
-                  
                 ],
               ),
             ),
@@ -142,7 +144,19 @@ class TransactionDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () async {
+                  final updated = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          EditTransactionScreen(transaction: transaction),
+                    ),
+                  );
+
+                  if (updated == true) {
+                    Navigator.pop(context, true);
+                  }
+                },
                 icon: const Icon(Icons.edit, color: Colors.white),
                 label: const Text(
                   "Edit Transaction",
@@ -163,35 +177,37 @@ class TransactionDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                onPressed: () {
-                  showDialog(
+                onPressed: () async {
+                  final delete = await showDialog<bool>(
                     context: context,
-                    builder: (_) {
-                      return AlertDialog(
-                        title: const Text("Delete Transaction"),
-                        content: const Text(
-                          "Are you sure you want to delete this transaction?",
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Cancel"),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Delete"),
-                          ),
-                        ],
-                      );
-                    },
+                    builder: (_) =>
+                        DeleteTransactionDialog(transaction: transaction),
                   );
+
+                  if (delete != true) return;
+
+                  try {
+                    print("Transaction ID: ${transaction.id}");
+
+                    await ApiService.deleteTransaction(
+                      userId: transaction.userId,
+                      transactionId: transaction.id,
+                    );
+                    if (!context.mounted) return;
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Transaction deleted successfully"),
+                      ),
+                    );
+
+                    Navigator.pop(context, true);
+                  } catch (e) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                  }
                 },
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
                 label: const Text(
@@ -204,6 +220,14 @@ class TransactionDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatCurrency(int value) {
+    final formatted = value.toString().replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => '.',
+    );
+    return 'Rp $formatted';
   }
 
   Widget _buildItem(String title, String value, IconData icon) {
