@@ -4,10 +4,7 @@ import 'package:saku_app/core/models/transaction_model.dart';
 class DeleteTransactionDialog extends StatelessWidget {
   final TransactionModel transaction;
 
-  const DeleteTransactionDialog({
-    super.key,
-    required this.transaction,
-  });
+  const DeleteTransactionDialog({super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +12,7 @@ class DeleteTransactionDialog extends StatelessWidget {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(
-        horizontal: 24,
-      ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -27,7 +22,6 @@ class DeleteTransactionDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
             /// Warning Icon
             Container(
               width: 86,
@@ -46,23 +40,17 @@ class DeleteTransactionDialog extends StatelessWidget {
             const SizedBox(height: 22),
 
             const Text(
-              "Delete this transaction?",
+              "Hapus transaksi ini?",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 31,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 31, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 12),
 
             const Text(
-              "This action cannot be undone.",
+              "Tindakan ini tidak dapat dibatalkan.",
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 19,
-              ),
+              style: TextStyle(color: Colors.black54, fontSize: 19),
             ),
 
             const SizedBox(height: 28),
@@ -73,13 +61,10 @@ class DeleteTransactionDialog extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xffF6F8FC),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: const Color(0xffD8E0EF),
-                ),
+                border: Border.all(color: const Color(0xffD8E0EF)),
               ),
               child: Row(
                 children: [
-
                   Container(
                     width: 56,
                     height: 56,
@@ -112,9 +97,7 @@ class DeleteTransactionDialog extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
-                      color: isIncome
-                          ? Colors.green
-                          : Colors.black87,
+                      color: isIncome ? Colors.green : Colors.black87,
                     ),
                   ),
                 ],
@@ -125,7 +108,6 @@ class DeleteTransactionDialog extends StatelessWidget {
 
             Row(
               children: [
-
                 Expanded(
                   child: SizedBox(
                     height: 58,
@@ -134,16 +116,13 @@ class DeleteTransactionDialog extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                          color: Color(0xffC9D1E8),
-                        ),
+                        side: const BorderSide(color: Color(0xffC9D1E8)),
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(40),
+                          borderRadius: BorderRadius.circular(40),
                         ),
                       ),
                       child: const Text(
-                        "Cancel",
+                        "Batal",
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -164,16 +143,14 @@ class DeleteTransactionDialog extends StatelessWidget {
                         Navigator.pop(context, true);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color(0xffC81414),
+                        backgroundColor: const Color(0xffC81414),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(40),
+                          borderRadius: BorderRadius.circular(40),
                         ),
                       ),
                       child: const Text(
-                        "Delete",
+                        "Hapus",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

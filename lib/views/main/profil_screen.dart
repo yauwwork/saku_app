@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:saku_app/core/networks/api_service.dart';
 import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/login/login_screen.dart';
 import 'package:saku_app/views/main/edit_profil.screen.dart';
+import 'package:saku_app/views/main/widgets/avatar_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -73,16 +72,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               const SizedBox(height: 20),
 
-              CircleAvatar(
-                radius: 55,
+              AvatarImage(
+                avatar: user?.avatar,
+                size: 110,
+                borderRadius: BorderRadius.circular(55),
                 backgroundColor: Colors.white,
-                backgroundImage: _avatarProvider(user?.avatar),
               ),
 
               const SizedBox(height: 18),
 
               Text(
-                user?.name ?? 'Guest',
+                user?.name ?? 'Tamu',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 28,
@@ -137,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               _menuTile(
                 icon: Icons.person_outline,
-                title: "Edit Profile",
+                title: "Edit Profil",
                 onTap: () async {
                   final user = UserSession.currentUser;
 
@@ -195,19 +195,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
-  }
-
-  ImageProvider _avatarProvider(String? avatar) {
-    if (avatar != null && avatar.isNotEmpty) {
-      if (avatar.startsWith('http')) {
-        return NetworkImage(avatar);
-      }
-      final file = File(avatar);
-      if (file.existsSync()) {
-        return FileImage(file);
-      }
-    }
-    return const NetworkImage('https://i.pravatar.cc/200');
   }
 
   Widget _menuTile({

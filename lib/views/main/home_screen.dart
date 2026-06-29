@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:saku_app/core/models/transaction_model.dart';
 import 'package:saku_app/core/models/user_model.dart';
@@ -7,6 +5,7 @@ import 'package:saku_app/core/networks/api_service.dart';
 import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/main/add_transaction_screen.dart';
 import 'package:saku_app/views/main/transaction_detail_screen.dart';
+import 'package:saku_app/views/main/widgets/avatar_image.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,32 +53,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int get totalIncome {
-  return transactions.fold<int>(0, (sum, item) {
-    return sum + (item.isIncome ? item.amount : 0);
-  });
-}
+    return transactions.fold<int>(0, (sum, item) {
+      return sum + (item.isIncome ? item.amount : 0);
+    });
+  }
 
-int get totalExpense {
-  return transactions.fold<int>(0, (sum, item) {
-    return sum + (item.isIncome ? 0 : item.amount);
-  });
-}
+  int get totalExpense {
+    return transactions.fold<int>(0, (sum, item) {
+      return sum + (item.isIncome ? 0 : item.amount);
+    });
+  }
 
-int get totalBalance {
-  return totalIncome - totalExpense;
-}
-
-  ImageProvider _avatarProvider(String? avatar, {required String fallback}) {
-    if (avatar != null && avatar.isNotEmpty) {
-      if (avatar.startsWith('http')) {
-        return NetworkImage(avatar);
-      }
-      final file = File(avatar);
-      if (file.existsSync()) {
-        return FileImage(file);
-      }
-    }
-    return NetworkImage(fallback);
+  int get totalBalance {
+    return totalIncome - totalExpense;
   }
 
   @override
@@ -113,19 +99,10 @@ int get totalBalance {
                   ValueListenableBuilder<UserModel?>(
                     valueListenable: UserSession.currentUserNotifier,
                     builder: (context, user, child) {
-                      return Container(
-                        height: 55,
-                        width: 55,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          image: DecorationImage(
-                            image: _avatarProvider(
-                              user?.avatar,
-                              fallback: 'https://i.pravatar.cc/150',
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      return AvatarImage(
+                        avatar: user?.avatar,
+                        size: 55,
+                        borderRadius: BorderRadius.circular(18),
                       );
                     },
                   ),
@@ -137,7 +114,7 @@ int get totalBalance {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Good Morning 👋",
+                          "Selamat Pagi",
                           style: TextStyle(color: Colors.grey, fontSize: 16),
                         ),
 
@@ -147,7 +124,7 @@ int get totalBalance {
                           valueListenable: UserSession.currentUserNotifier,
                           builder: (context, user, child) {
                             return Text(
-                              user?.name ?? 'Guest',
+                              user?.name ?? 'Tamu',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
@@ -193,7 +170,7 @@ int get totalBalance {
                     Row(
                       children: const [
                         Text(
-                          "Total Balance",
+                          "Total Saldo",
                           style: TextStyle(color: Colors.white70, fontSize: 17),
                         ),
 
@@ -221,7 +198,7 @@ int get totalBalance {
                         Expanded(
                           child: _balanceItem(
                             icon: Icons.arrow_downward,
-                            title: "Income",
+                            title: "Pemasukan",
                             amount: _formatCurrency(totalIncome),
                             iconColor: Colors.green,
                           ),
@@ -230,7 +207,7 @@ int get totalBalance {
                         Expanded(
                           child: _balanceItem(
                             icon: Icons.arrow_upward,
-                            title: "Expense",
+                            title: "Pengeluaran",
                             amount: _formatCurrency(totalExpense),
                             iconColor: Colors.red,
                           ),
@@ -248,14 +225,14 @@ int get totalBalance {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Recent Transactions",
+                    "Transaksi Terbaru",
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
 
                   TextButton(
                     onPressed: () {},
                     child: const Text(
-                      "See All",
+                      "Lihat Semua",
                       style: TextStyle(
                         color: Color(0xff2563EB),
                         fontWeight: FontWeight.w600,
@@ -355,7 +332,7 @@ int get totalBalance {
                                   const SizedBox(height: 4),
 
                                   Text(
-                                    item.category,
+                                    item.localizedCategory,
                                     style: const TextStyle(
                                       color: Colors.grey,
                                       fontSize: 15,

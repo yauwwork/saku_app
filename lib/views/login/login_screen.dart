@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         const Text(
-                          "Welcome Back",
+                          "Selamat Datang",
                           style: TextStyle(
                             fontSize: 38,
                             fontWeight: FontWeight.w700,
@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 10),
 
                         const Text(
-                          "Sign in to continue to FinanceFlow",
+                          "Masuk untuk melanjutkan ke SAKU",
                           style: TextStyle(
                             color: Color(0xff55596A),
                             fontSize: 18,
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Email Address",
+                            "Alamat Email",
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.grey.shade800,
@@ -172,30 +172,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         const SizedBox(height: 26),
 
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Password",
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey.shade800,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {},
-                              child: const Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                  color: Color(0xff1652CC),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
                         TextFormField(
                           controller: passwordController,
                           obscureText: obscurePassword,
@@ -218,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return "Password wajib diisi";
+                              return "Kata sandi wajib diisi";
                             }
                             return null;
                           },
@@ -248,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(width: 14),
 
                             const Text(
-                              "Remember Me",
+                              "Ingat Saya",
                               style: TextStyle(fontSize: 17),
                             ),
                           ],
@@ -283,8 +259,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       );
 
                                       if (user == null) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
                                           const SnackBar(
                                             content: Text(
                                               'Email atau password salah',
@@ -301,11 +278,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                         );
                                       }
                                     } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            'Login gagal: ${e.toString()}',
+                                            'Masuk gagal: ${e.toString()}',
                                           ),
                                         ),
                                       );
@@ -327,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    "Login",
+                                    "Masuk",
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -350,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 14),
                               child: Text(
-                                "OR",
+                                "ATAU",
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.black54,
@@ -384,7 +362,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               context.push(const RegisterScreen());
                             },
                             child: const Text(
-                              "Create Account",
+                              "Buat Akun",
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.black87,

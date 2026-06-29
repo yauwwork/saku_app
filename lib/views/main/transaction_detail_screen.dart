@@ -22,7 +22,7 @@ class TransactionDetailScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          "Transaction Details",
+          "Detail Transaksi",
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -78,7 +78,7 @@ class TransactionDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: const Text(
-                "Completed",
+                "Selesai",
                 style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.bold,
@@ -104,7 +104,7 @@ class TransactionDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _buildItem(
-                    "Notes",
+                    "Catatan",
                     transaction.title,
                     Icons.note_alt_outlined,
                   ),
@@ -112,22 +112,26 @@ class TransactionDetailScreen extends StatelessWidget {
                   const Divider(height: 30),
 
                   _buildItem(
-                    "Category",
-                    transaction.category,
+                    "Kategori",
+                    transaction.localizedCategory,
                     Icons.category_outlined,
                   ),
 
                   const Divider(height: 30),
 
                   _buildItem(
-                    "Date",
+                    "Tanggal",
                     transaction.formattedDate,
                     Icons.calendar_today_outlined,
                   ),
 
                   const Divider(height: 30),
 
-                  _buildItem("Type", transaction.type, Icons.swap_vert),
+                  _buildItem(
+                    "Jenis",
+                    transaction.localizedType,
+                    Icons.swap_vert,
+                  ),
                 ],
               ),
             ),
@@ -159,7 +163,7 @@ class TransactionDetailScreen extends StatelessWidget {
                 },
                 icon: const Icon(Icons.edit, color: Colors.white),
                 label: const Text(
-                  "Edit Transaction",
+                  "Edit Transaksi",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
@@ -197,7 +201,7 @@ class TransactionDetailScreen extends StatelessWidget {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Transaction deleted successfully"),
+                        content: Text("Transaksi berhasil dihapus"),
                       ),
                     );
 
@@ -211,7 +215,7 @@ class TransactionDetailScreen extends StatelessWidget {
                 },
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
                 label: const Text(
-                  "Delete",
+                  "Hapus",
                   style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ),

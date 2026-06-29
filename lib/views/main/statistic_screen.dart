@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:saku_app/core/models/transaction_model.dart';
@@ -16,13 +16,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   bool isLoading = true;
   List<TransactionModel> transactions = [];
 
-  String selectedMonth = "This Month";
+  String selectedMonth = "Bulan Ini";
 
   final List<String> months = [
-    "Today",
-    "This Week",
-    "This Month",
-    "This Year",
+    "Hari Ini",
+    "Minggu Ini",
+    "Bulan Ini",
+    "Tahun Ini",
   ];
 
   @override
@@ -45,7 +45,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     });
 
     try {
-      final data = await ApiService.getTransactionsByUser(UserSession.currentUser!.id);
+      final data = await ApiService.getTransactionsByUser(
+        UserSession.currentUser!.id,
+      );
       setState(() {
         transactions = data;
       });
@@ -71,18 +73,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final now = DateTime.now();
 
     switch (selectedMonth) {
-      case 'Today':
+      case 'Hari Ini':
         return date.year == now.year &&
             date.month == now.month &&
             date.day == now.day;
-      case 'This Week':
-        final weekStart = DateTime(now.year, now.month, now.day)
-            .subtract(Duration(days: now.weekday - 1));
+      case 'Minggu Ini':
+        final weekStart = DateTime(
+          now.year,
+          now.month,
+          now.day,
+        ).subtract(Duration(days: now.weekday - 1));
         final weekEnd = weekStart.add(const Duration(days: 6));
         return !date.isBefore(weekStart) && !date.isAfter(weekEnd);
-      case 'This Month':
+      case 'Bulan Ini':
         return date.year == now.year && date.month == now.month;
-      case 'This Year':
+      case 'Tahun Ini':
         return date.year == now.year;
       default:
         return true;
@@ -106,14 +111,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<double> get incomeTrendValues {
     final now = DateTime.now();
     return List.generate(7, (index) {
-      final day = DateTime(now.year, now.month, now.day)
-          .subtract(Duration(days: 6 - index));
+      final day = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(Duration(days: 6 - index));
       return filteredTransactions
-          .where((item) =>
-              item.isIncome &&
-              item.dateTime.year == day.year &&
-              item.dateTime.month == day.month &&
-              item.dateTime.day == day.day)
+          .where(
+            (item) =>
+                item.isIncome &&
+                item.dateTime.year == day.year &&
+                item.dateTime.month == day.month &&
+                item.dateTime.day == day.day,
+          )
           .fold<double>(0, (sum, item) => sum + item.amount.toDouble());
     });
   }
@@ -121,14 +131,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<double> get expenseTrendValues {
     final now = DateTime.now();
     return List.generate(7, (index) {
-      final day = DateTime(now.year, now.month, now.day)
-          .subtract(Duration(days: 6 - index));
+      final day = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(Duration(days: 6 - index));
       return filteredTransactions
-          .where((item) =>
-              !item.isIncome &&
-              item.dateTime.year == day.year &&
-              item.dateTime.month == day.month &&
-              item.dateTime.day == day.day)
+          .where(
+            (item) =>
+                !item.isIncome &&
+                item.dateTime.year == day.year &&
+                item.dateTime.month == day.month &&
+                item.dateTime.day == day.day,
+          )
           .fold<double>(0, (sum, item) => sum + item.amount.toDouble());
     });
   }
@@ -136,9 +151,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<String> get trendLabels {
     final now = DateTime.now();
     return List.generate(7, (index) {
-      final day = DateTime(now.year, now.month, now.day)
-          .subtract(Duration(days: 6 - index));
-      return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][day.weekday - 1];
+      final day = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(Duration(days: 6 - index));
+      return ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'][day.weekday - 1];
     });
   }
 
@@ -146,8 +164,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final expenses = <String, int>{};
     for (final transaction in filteredTransactions) {
       if (transaction.isIncome) continue;
-      expenses[transaction.category] =
-          (expenses[transaction.category] ?? 0) + transaction.amount;
+      expenses[transaction.localizedCategory] =
+          (expenses[transaction.localizedCategory] ?? 0) + transaction.amount;
     }
 
     final total = expenses.values.fold<int>(0, (sum, value) => sum + value);
@@ -226,7 +244,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Hello, ${user?.name ?? 'User'}',
+                            'Halo, ${user?.name ?? 'Pengguna'}',
                             style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -234,7 +252,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'Here is your financial overview',
+                            'Ini ringkasan keuanganmu',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey.shade700,
@@ -285,11 +303,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Total Balance',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                        ),
+                        'Total Saldo',
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -307,7 +322,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             child: _buildSummaryCard(
                               icon: Icons.arrow_downward,
                               iconColor: Colors.greenAccent,
-                              label: 'Income',
+                              label: 'Pemasukan',
                               amount: _formatCurrency(totalIncome),
                             ),
                           ),
@@ -316,7 +331,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             child: _buildSummaryCard(
                               icon: Icons.arrow_upward,
                               iconColor: Colors.redAccent,
-                              label: 'Expense',
+                              label: 'Pengeluaran',
                               amount: _formatCurrency(totalExpense),
                             ),
                           ),
@@ -327,22 +342,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
                 const SizedBox(height: 24),
                 _buildTrendChartSection(
-                  title: 'Income Trend',
-                  subtitle: 'Latest 7-day income',
+                  title: 'Tren Pemasukan',
+                  subtitle: 'Pemasukan 7 hari terakhir',
                   values: incomeTrendValues,
                   labels: trendLabels,
                   accentColor: const Color(0xff16a34a),
                 ),
                 const SizedBox(height: 24),
                 _buildTrendChartSection(
-                  title: 'Expense Trend',
-                  subtitle: 'Latest 7-day spending',
+                  title: 'Tren Pengeluaran',
+                  subtitle: 'Pengeluaran 7 hari terakhir',
                   values: expenseTrendValues,
                   labels: trendLabels,
                   accentColor: const Color(0xffdc2626),
                 ),
                 const SizedBox(height: 24),
-                _sectionHeader('Top Spending', 'Biggest expense categories'),
+                _sectionHeader(
+                  'Pengeluaran Terbesar',
+                  'Kategori pengeluaran terbesar',
+                ),
                 const SizedBox(height: 14),
                 if (isLoading)
                   const Center(child: CircularProgressIndicator())
@@ -355,24 +373,25 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: const Text(
-                      'No expense categories available for this period.',
+                      'Belum ada kategori pengeluaran untuk periode ini.',
                       style: TextStyle(fontSize: 15, color: Colors.grey),
                     ),
                   )
-                else ...topCategories.map((category) {
-                  final color = _categoryColor(category.title);
-                  final icon = _categoryIcon(category.title);
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: _categoryTile(
-                      icon: icon,
-                      color: color,
-                      title: category.title,
-                      amount: _formatCurrency(category.amount),
-                      percent: category.percent,
-                    ),
-                  );
-                }).toList(),
+                else
+                  ...topCategories.map((category) {
+                    final color = _categoryColor(category.title);
+                    final icon = _categoryIcon(category.title);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _categoryTile(
+                        icon: icon,
+                        color: color,
+                        title: category.title,
+                        amount: _formatCurrency(category.amount),
+                        percent: category.percent,
+                      ),
+                    );
+                  }).toList(),
                 const SizedBox(height: 32),
               ],
             ),
@@ -486,7 +505,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _sectionHeader(String title, String subtitle, {IconData icon = Icons.bar_chart}) {
+  Widget _sectionHeader(
+    String title,
+    String subtitle, {
+    IconData icon = Icons.bar_chart,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -495,25 +518,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 13,
-              ),
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
             ),
           ],
         ),
-        Icon(
-          icon,
-          color: const Color(0xff2563EB),
-        ),
+        Icon(icon, color: const Color(0xff2563EB)),
       ],
     );
   }
@@ -545,11 +559,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               color: iconColor.withOpacity(0.14),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 24,
-            ),
+            child: Icon(icon, color: iconColor, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -558,10 +568,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -610,10 +617,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   color: color.withOpacity(0.16),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
-                  icon,
-                  color: color,
-                ),
+                child: Icon(icon, color: color),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -629,7 +633,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${(percent * 100).toStringAsFixed(0)}% of total',
+                      '${(percent * 100).toStringAsFixed(0)}% dari total',
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 12,
@@ -666,19 +670,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     switch (category.toLowerCase()) {
       case 'food':
       case 'food & drink':
+      case 'makanan':
         return Icons.restaurant;
       case 'transportation':
+      case 'transportasi':
         return Icons.directions_car;
       case 'shopping':
+      case 'belanja':
         return Icons.shopping_bag;
       case 'entertainment':
+      case 'hiburan':
         return Icons.movie;
       case 'health':
+      case 'kesehatan':
         return Icons.health_and_safety;
       case 'investment':
+      case 'investasi':
         return Icons.monetization_on;
       case 'salary':
+      case 'gaji':
         return Icons.account_balance_wallet;
+      case 'gift':
+      case 'hadiah':
+        return Icons.card_giftcard;
       default:
         return Icons.pie_chart;
     }
@@ -688,19 +702,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     switch (category.toLowerCase()) {
       case 'food':
       case 'food & drink':
+      case 'makanan':
         return Colors.orange;
       case 'transportation':
+      case 'transportasi':
         return Colors.blue;
       case 'shopping':
+      case 'belanja':
         return Colors.green;
       case 'entertainment':
+      case 'hiburan':
         return Colors.red;
       case 'health':
+      case 'kesehatan':
         return Colors.purple;
       case 'investment':
+      case 'investasi':
         return Colors.teal;
       case 'salary':
+      case 'gaji':
         return Colors.blue;
+      case 'gift':
+      case 'hadiah':
+        return Colors.pink;
       default:
         return Colors.grey;
     }
@@ -748,10 +772,7 @@ class TrendBarChart extends StatelessWidget {
                 children: [
                   Text(
                     values[index] == 0 ? '-' : values[index].toInt().toString(),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade700,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                   ),
                   const SizedBox(height: 8),
                   Container(
@@ -772,10 +793,7 @@ class TrendBarChart extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     labels[index],
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 11,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
                   ),
                 ],
               ),

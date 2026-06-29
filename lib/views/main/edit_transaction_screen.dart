@@ -5,18 +5,13 @@ import 'package:saku_app/core/networks/api_service.dart';
 class EditTransactionScreen extends StatefulWidget {
   final TransactionModel transaction;
 
-  const EditTransactionScreen({
-    super.key,
-    required this.transaction,
-  });
+  const EditTransactionScreen({super.key, required this.transaction});
 
   @override
-  State<EditTransactionScreen> createState() =>
-      _EditTransactionScreenState();
+  State<EditTransactionScreen> createState() => _EditTransactionScreenState();
 }
 
-class _EditTransactionScreenState
-    extends State<EditTransactionScreen> {
+class _EditTransactionScreenState extends State<EditTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
 
   bool isIncome = true;
@@ -25,17 +20,17 @@ class _EditTransactionScreenState
   final amountController = TextEditingController();
   final noteController = TextEditingController();
 
-  String selectedCategory = "Salary";
+  String selectedCategory = "Gaji";
 
   final List<String> categories = [
-    "Salary",
-    "Food",
-    "Shopping",
-    "Transportation",
-    "Entertainment",
-    "Health",
-    "Gift",
-    "Investment",
+    "Gaji",
+    "Makanan",
+    "Belanja",
+    "Transportasi",
+    "Hiburan",
+    "Kesehatan",
+    "Hadiah",
+    "Investasi",
   ];
 
   DateTime selectedDate = DateTime.now();
@@ -46,17 +41,13 @@ class _EditTransactionScreenState
 
     isIncome = widget.transaction.type == "income";
 
-    amountController.text =
-        widget.transaction.amount.toString();
+    amountController.text = widget.transaction.amount.toString();
 
-    noteController.text =
-        widget.transaction.title;
+    noteController.text = widget.transaction.title;
 
-    selectedCategory =
-        widget.transaction.category;
+    selectedCategory = _normalizeCategory(widget.transaction.category);
 
-    selectedDate =
-        DateTime.fromMillisecondsSinceEpoch(
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(
       widget.transaction.date * 1000,
     );
   }
@@ -68,10 +59,33 @@ class _EditTransactionScreenState
     super.dispose();
   }
 
+  String _normalizeCategory(String category) {
+    switch (category.toLowerCase()) {
+      case 'salary':
+        return 'Gaji';
+      case 'food':
+      case 'food & drink':
+        return 'Makanan';
+      case 'shopping':
+        return 'Belanja';
+      case 'transportation':
+        return 'Transportasi';
+      case 'entertainment':
+        return 'Hiburan';
+      case 'health':
+        return 'Kesehatan';
+      case 'gift':
+        return 'Hadiah';
+      case 'investment':
+        return 'Investasi';
+      default:
+        return categories.contains(category) ? category : 'Gaji';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final primaryColor =
-        isIncome ? const Color(0xff2563EB) : Colors.red;
+    final primaryColor = isIncome ? const Color(0xff2563EB) : Colors.red;
 
     return Scaffold(
       backgroundColor: const Color(0xffEEF3FA),
@@ -81,7 +95,7 @@ class _EditTransactionScreenState
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          "Edit Transaction",
+          "Edit Transaksi",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -95,10 +109,7 @@ class _EditTransactionScreenState
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              primaryColor.withOpacity(.15),
-              const Color(0xffEEF3FA),
-            ],
+            colors: [primaryColor.withOpacity(.15), const Color(0xffEEF3FA)],
           ),
         ),
 
@@ -114,8 +125,7 @@ class _EditTransactionScreenState
 
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(28),
+                  borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(.08),
@@ -130,7 +140,7 @@ class _EditTransactionScreenState
 
                   children: [
                     Text(
-                      'Transaction Type',
+                      'Jenis Transaksi',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: Colors.grey.shade800,
@@ -147,9 +157,7 @@ class _EditTransactionScreenState
                               });
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16,
-                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               decoration: BoxDecoration(
                                 color: isIncome
                                     ? primaryColor
@@ -158,7 +166,7 @@ class _EditTransactionScreenState
                               ),
                               child: Center(
                                 child: Text(
-                                  'Income',
+                                  'Pemasukan',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -180,9 +188,7 @@ class _EditTransactionScreenState
                               });
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16,
-                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               decoration: BoxDecoration(
                                 color: !isIncome
                                     ? Colors.red
@@ -191,7 +197,7 @@ class _EditTransactionScreenState
                               ),
                               child: Center(
                                 child: Text(
-                                  'Expense',
+                                  'Pengeluaran',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -210,7 +216,7 @@ class _EditTransactionScreenState
                     const SizedBox(height: 24),
 
                     Text(
-                      'Title',
+                      'Judul',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -221,7 +227,7 @@ class _EditTransactionScreenState
                     TextFormField(
                       controller: noteController,
                       decoration: InputDecoration(
-                        hintText: 'Enter title',
+                        hintText: 'Masukkan judul',
                         prefixIcon: const Icon(Icons.title),
                         filled: true,
                         fillColor: Colors.grey.shade100,
@@ -232,7 +238,7 @@ class _EditTransactionScreenState
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Title is required';
+                          return 'Judul wajib diisi';
                         }
                         return null;
                       },
@@ -241,7 +247,7 @@ class _EditTransactionScreenState
                     const SizedBox(height: 22),
 
                     Text(
-                      'Amount',
+                      'Jumlah',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -268,10 +274,10 @@ class _EditTransactionScreenState
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Amount is required';
+                          return 'Jumlah wajib diisi';
                         }
                         if (int.tryParse(value.trim()) == null) {
-                          return 'Enter a valid number';
+                          return 'Masukkan angka yang valid';
                         }
                         return null;
                       },
@@ -280,7 +286,7 @@ class _EditTransactionScreenState
                     const SizedBox(height: 22),
 
                     Text(
-                      'Category',
+                      'Kategori',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -291,10 +297,7 @@ class _EditTransactionScreenState
                     DropdownButtonFormField<String>(
                       value: selectedCategory,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.category,
-                          color: primaryColor,
-                        ),
+                        prefixIcon: Icon(Icons.category, color: primaryColor),
                         filled: true,
                         fillColor: Colors.grey.shade100,
                         border: OutlineInputBorder(
@@ -320,7 +323,7 @@ class _EditTransactionScreenState
                     const SizedBox(height: 22),
 
                     Text(
-                      'Date',
+                      'Tanggal',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -354,10 +357,7 @@ class _EditTransactionScreenState
                         ),
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.calendar_today,
-                              color: primaryColor,
-                            ),
+                            Icon(Icons.calendar_today, color: primaryColor),
                             const SizedBox(width: 15),
                             Expanded(
                               child: Text(
@@ -398,9 +398,7 @@ class _EditTransactionScreenState
                                 color: Colors.white,
                               ),
                         label: Text(
-                          isLoading
-                              ? 'Updating...'
-                              : 'Update Transaction',
+                          isLoading ? 'Memperbarui...' : 'Perbarui Transaksi',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -427,8 +425,7 @@ class _EditTransactionScreenState
                                 );
 
                                 if (parsedAmount == null) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
                                         'Masukkan jumlah yang valid',
@@ -443,8 +440,7 @@ class _EditTransactionScreenState
                                 });
 
                                 try {
-                                  final updatedTransaction =
-                                      TransactionModel(
+                                  final updatedTransaction = TransactionModel(
                                     id: widget.transaction.id,
                                     userId: widget.transaction.userId,
                                     title: noteController.text.trim(),
@@ -453,7 +449,7 @@ class _EditTransactionScreenState
                                     category: selectedCategory,
                                     date:
                                         selectedDate.millisecondsSinceEpoch ~/
-                                            1000,
+                                        1000,
                                   );
 
                                   await ApiService.updateTransaction(
@@ -462,31 +458,27 @@ class _EditTransactionScreenState
 
                                   if (!mounted) return;
 
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.green,
                                       behavior: SnackBarBehavior.floating,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(14),
                                       ),
                                       content: const Text(
-                                        'Transaction updated successfully 🎉',
+                                        'Transaksi berhasil diperbarui',
                                       ),
                                     ),
                                   );
 
                                   Navigator.pop(context, true);
                                 } catch (e) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.red,
                                       behavior: SnackBarBehavior.floating,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(14),
                                       ),
                                       content: Text(e.toString()),
                                     ),
@@ -504,35 +496,32 @@ class _EditTransactionScreenState
 
                     const SizedBox(height: 25),
 
-Center(
-  child: Text(
-    "Update your transaction whenever needed ✨",
-    textAlign: TextAlign.center,
-    style: TextStyle(
-      color: Colors.grey.shade600,
-      fontSize: 13,
-      fontWeight: FontWeight.w500,
-    ),
-  ),
-),
+                    Center(
+                      child: Text(
+                        "Perbarui transaksi kapan pun diperlukan",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
 
-const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-Center(
-  child: Container(
-    width: 60,
-    height: 5,
-    decoration: BoxDecoration(
-      color:
-          primaryColor.withOpacity(.25),
-      borderRadius:
-          BorderRadius.circular(20),
-    ),
-  ),
-),
+                    Center(
+                      child: Container(
+                        width: 60,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(.25),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
 
-const SizedBox(height: 15),
-
+                    const SizedBox(height: 15),
                   ],
                 ),
               ),

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:saku_app/core/models/user_model.dart';
 import 'package:saku_app/core/networks/api_service.dart';
 import 'package:saku_app/core/session/user_session.dart';
+import 'package:saku_app/views/main/widgets/avatar_image.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String userId;
@@ -126,16 +127,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Stack(
                 children: [
-                  CircleAvatar(
-                    radius: 55,
-                    backgroundImage: image != null
-                        ? FileImage(image!)
-                        : NetworkImage(
-                                user?.avatar.isNotEmpty == true
-                                    ? user!.avatar
-                                    : 'https://i.pravatar.cc/200',
-                              )
-                              as ImageProvider,
+                  AvatarImage(
+                    avatar: image?.path ?? user?.avatar,
+                    size: 110,
+                    borderRadius: BorderRadius.circular(55),
                   ),
                   Positioned(
                     bottom: 0,
@@ -194,14 +189,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: passwordC,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Kata Sandi',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Password wajib diisi';
+                    return 'Kata sandi wajib diisi';
                   }
                   return null;
                 },

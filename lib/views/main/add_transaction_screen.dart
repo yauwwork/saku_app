@@ -20,17 +20,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final amountController = TextEditingController();
   final noteController = TextEditingController();
 
-  String selectedCategory = "Salary";
+  String selectedCategory = "Gaji";
 
   final categories = [
-    "Salary",
-    "Food",
-    "Shopping",
-    "Transportation",
-    "Entertainment",
-    "Health",
-    "Gift",
-    "Investment",
+    "Gaji",
+    "Makanan",
+    "Belanja",
+    "Transportasi",
+    "Hiburan",
+    "Kesehatan",
+    "Hadiah",
+    "Investasi",
   ];
 
   DateTime selectedDate = DateTime.now();
@@ -54,7 +54,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          "Add Transaction",
+          "Tambah Transaksi",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -114,7 +114,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
                     Center(
                       child: Text(
-                        isIncome ? "Income" : "Expense",
+                        isIncome ? "Pemasukan" : "Pengeluaran",
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -159,7 +159,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 ),
 
                                 child: Text(
-                                  "Income",
+                                  "Pemasukan",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -196,7 +196,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 ),
 
                                 child: Text(
-                                  "Expense",
+                                  "Pengeluaran",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -215,7 +215,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     const SizedBox(height: 30),
 
                     Text(
-                      "Amount",
+                      "Jumlah",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -266,7 +266,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "Amount is required";
+                          return "Jumlah wajib diisi";
                         }
                         return null;
                       },
@@ -275,7 +275,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     const SizedBox(height: 25),
 
                     Text(
-                      "Category",
+                      "Kategori",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -327,7 +327,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     const SizedBox(height: 25),
 
                     Text(
-                      "Date",
+                      "Tanggal",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -397,7 +397,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     const SizedBox(height: 25),
 
                     Text(
-                      "Notes",
+                      "Catatan",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -412,7 +412,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       maxLines: 4,
 
                       decoration: InputDecoration(
-                        hintText: "Write description...",
+                        hintText: "Tulis catatan...",
                         prefixIcon: Padding(
                           padding: const EdgeInsets.only(bottom: 70),
                           child: Icon(
@@ -464,8 +464,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
                         label: Text(
                           isLoading
-                              ? "Saving..."
-                              : (isIncome ? "Save Income" : "Save Expense"),
+                              ? "Menyimpan..."
+                              : (isIncome
+                                    ? "Simpan Pemasukan"
+                                    : "Simpan Pengeluaran"),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -494,7 +496,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
-                                        "User tidak ditemukan. Silakan login ulang.",
+                                        "Pengguna tidak ditemukan. Silakan masuk ulang.",
                                       ),
                                     ),
                                   );
@@ -555,8 +557,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                       ),
                                       content: Text(
                                         isIncome
-                                            ? "Income Added Successfully 🎉"
-                                            : "Expense Added Successfully 🎉",
+                                            ? "Pemasukan berhasil ditambahkan"
+                                            : "Pengeluaran berhasil ditambahkan",
                                       ),
                                     ),
                                   );
@@ -596,8 +598,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     Center(
                       child: Text(
                         isIncome
-                            ? "Track your income and grow your savings 💰"
-                            : "Control your spending wisely 💳",
+                            ? "Catat pemasukan dan tingkatkan tabunganmu"
+                            : "Kendalikan pengeluaran dengan bijak",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.grey.shade600,

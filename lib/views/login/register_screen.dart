@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:saku_app/core/networks/api_service.dart';
 import 'package:saku_app/core/session/user_session.dart';
-import 'package:saku_app/core/extension/navigator.dart';
 import 'package:saku_app/views/main/main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -14,12 +13,9 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController fullNameController =
-      TextEditingController();
-  final TextEditingController emailController =
-      TextEditingController();
-  final TextEditingController passwordController =
-      TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
@@ -44,31 +40,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
-        color: Color(0xffB0B3C6),
-        fontSize: 18,
-      ),
-      prefixIcon: Icon(
-        icon,
-        color: const Color(0xff777A8D),
-        size: 30,
-      ),
+      hintStyle: const TextStyle(color: Color(0xffB0B3C6), fontSize: 18),
+      prefixIcon: Icon(icon, color: const Color(0xff777A8D), size: 30),
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide:
-            BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: Colors.grey.shade300),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(
-          color: Color(0xff1652CC),
-          width: 1.4,
-        ),
+        borderSide: const BorderSide(color: Color(0xff1652CC), width: 1.4),
       ),
     );
   }
@@ -80,10 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 28,
-              vertical: 30,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 30),
             child: Column(
               children: [
                 Container(
@@ -92,17 +73,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
-                      colors: [
-                        Colors.white,
-                        Color(0xffEEF2F6),
-                      ],
+                      colors: [Colors.white, Color(0xffEEF2F6)],
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(.15),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
-                      )
+                      ),
                     ],
                   ),
                   child: Center(
@@ -112,10 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
-                          colors: [
-                            Color(0xff5CA8FF),
-                            Color(0xff1652CC),
-                          ],
+                          colors: [Color(0xff5CA8FF), Color(0xff1652CC)],
                         ),
                       ),
                       child: const Icon(
@@ -134,14 +109,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   padding: const EdgeInsets.all(28),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius:
-                        BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(.15),
                         blurRadius: 25,
                         offset: const Offset(0, 10),
-                      )
+                      ),
                     ],
                   ),
                   child: Form(
@@ -149,7 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       children: [
                         const Text(
-                          "Create Account",
+                          "Buat Akun",
                           style: TextStyle(
                             fontSize: 36,
                             fontWeight: FontWeight.w700,
@@ -159,11 +133,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 10),
 
                         const Text(
-                          "Sign up to start using FinanceFlow",
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.black54,
-                          ),
+                          "Daftar untuk mulai menggunakan FinanceFlow",
+                          style: TextStyle(fontSize: 17, color: Colors.black54),
                         ),
 
                         const SizedBox(height: 35),
@@ -171,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Full Name",
+                            "Nama Lengkap",
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.grey.shade800,
@@ -184,7 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         TextFormField(
                           controller: fullNameController,
                           decoration: inputDecoration(
-                            hint: "John Doe",
+                            hint: "Nama lengkap",
                             icon: Icons.person_outline,
                           ),
                           validator: (value) {
@@ -200,7 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Email Address",
+                            "Alamat Email",
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.grey.shade800,
@@ -229,10 +200,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Password",
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
+                            "Kata Sandi",
+                            style: TextStyle(fontSize: 17),
                           ),
                         ),
 
@@ -252,8 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               onPressed: () {
                                 setState(() {
-                                  obscurePassword =
-                                      !obscurePassword;
+                                  obscurePassword = !obscurePassword;
                                 });
                               },
                             ),
@@ -265,20 +233,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Confirm Password",
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
+                            "Konfirmasi Kata Sandi",
+                            style: TextStyle(fontSize: 17),
                           ),
                         ),
 
                         const SizedBox(height: 10),
 
                         TextFormField(
-                          controller:
-                              confirmPasswordController,
-                          obscureText:
-                              obscureConfirmPassword,
+                          controller: confirmPasswordController,
+                          obscureText: obscureConfirmPassword,
                           decoration: inputDecoration(
                             hint: "••••••••",
                             icon: Icons.lock_outline,
@@ -301,13 +265,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 24),
 
                         Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Checkbox(
                               value: agreeTerms,
-                              activeColor:
-                                  const Color(0xff1652CC),
+                              activeColor: const Color(0xff1652CC),
                               onChanged: (v) {
                                 setState(() {
                                   agreeTerms = v!;
@@ -316,13 +278,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const Expanded(
                               child: Padding(
-                                padding:
-                                    EdgeInsets.only(top: 12),
+                                padding: EdgeInsets.only(top: 12),
                                 child: Text(
-                                  "I agree to the Terms of Service and Privacy Policy",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                  ),
+                                  "Saya menyetujui Syarat Layanan dan Kebijakan Privasi",
+                                  style: TextStyle(fontSize: 15),
                                 ),
                               ),
                             ),
@@ -331,17 +290,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         const SizedBox(height: 24),
 
-                                                SizedBox(
+                        SizedBox(
                           width: double.infinity,
                           height: 60,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xff1652CC),
+                              backgroundColor: const Color(0xff1652CC),
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                             ),
                             onPressed: isLoading
@@ -351,11 +308,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       return;
                                     }
                                     if (!agreeTerms) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
                                           content: Text(
-                                            "Please agree to the Terms & Privacy Policy",
+                                            "Silakan setujui syarat dan kebijakan privasi",
                                           ),
                                         ),
                                       );
@@ -363,11 +321,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     }
                                     if (passwordController.text !=
                                         confirmPasswordController.text) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
                                           content: Text(
-                                            "Password doesn't match",
+                                            "Kata sandi tidak cocok",
                                           ),
                                         ),
                                       );
@@ -377,11 +336,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       isLoading = true;
                                     });
                                     try {
-                                      final newUser = await ApiService.registerUser(
-                                        name: fullNameController.text.trim(),
-                                        email: emailController.text.trim(),
-                                        password: passwordController.text,
-                                      );
+                                      final newUser =
+                                          await ApiService.registerUser(
+                                            name: fullNameController.text
+                                                .trim(),
+                                            email: emailController.text.trim(),
+                                            password: passwordController.text,
+                                          );
                                       await UserSession.save(newUser);
                                       await Navigator.pushReplacement(
                                         context,
@@ -390,11 +351,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         ),
                                       );
                                     } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            'Register gagal: ${e.toString()}',
+                                            'Daftar gagal: ${e.toString()}',
                                           ),
                                         ),
                                       );
@@ -416,7 +378,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    "Create Account",
+                                    "Buat Akun",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
@@ -437,10 +399,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                             const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 14),
+                              padding: EdgeInsets.symmetric(horizontal: 14),
                               child: Text(
-                                "OR",
+                                "ATAU",
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 17,
@@ -464,21 +425,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 60,
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xffF7F8FC),
-                              side: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
+                              backgroundColor: const Color(0xffF7F8FC),
+                              side: BorderSide(color: Colors.grey.shade300),
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                             ),
                             onPressed: () {
                               Navigator.pop(context);
                             },
                             child: const Text(
-                              "Back to Login",
+                              "Kembali ke Masuk",
                               style: TextStyle(
                                 color: Colors.black87,
                                 fontWeight: FontWeight.bold,
