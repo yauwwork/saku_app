@@ -65,6 +65,46 @@ class ApiService {
     }
   }
 
+  // ===========================
+// GET USER BY ID
+// ===========================
+
+static Future<UserModel> getUserById(String id) async {
+  final uri = Uri.parse(Endpoint.userById(id));
+
+  final response = await client.get(uri);
+
+  if (response.statusCode == 200) {
+    return UserModel.fromJson(jsonDecode(response.body));
+  }
+
+  throw Exception("Failed to load user");
+}
+
+// ===========================
+// UPDATE USER
+// ===========================
+
+static Future<UserModel> updateUser({
+  required UserModel user,
+}) async {
+  final uri = Uri.parse(Endpoint.userById(user.id));
+
+  final response = await client.put(
+    uri,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(user.toJson()),
+  );
+
+  if (response.statusCode == 200) {
+    return UserModel.fromJson(jsonDecode(response.body));
+  }
+
+  throw Exception("Failed to update user");
+}
+
   static Future<List<TransactionModel>> getTransactionsByUser(
     String userId,
   ) async {

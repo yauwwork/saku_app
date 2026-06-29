@@ -1,10 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:saku_app/core/models/transaction_model.dart';
+import 'package:saku_app/core/models/user_model.dart';
 import 'package:saku_app/core/networks/api_service.dart';
 import 'package:saku_app/core/session/user_session.dart';
 import 'package:saku_app/views/main/add_transaction_screen.dart';
-import 'package:saku_app/views/main/profil_screen.dart';
-import 'package:saku_app/views/main/statistic_screen.dart';
 import 'package:saku_app/views/main/transaction_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -71,6 +72,19 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  ImageProvider _avatarProvider(String? avatar, {required String fallback}) {
+    if (avatar != null && avatar.isNotEmpty) {
+      if (avatar.startsWith('http')) {
+        return NetworkImage(avatar);
+      }
+      final file = File(avatar);
+      if (file.existsSync()) {
+        return FileImage(file);
+      }
+    }
+    return NetworkImage(fallback);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,19 +113,24 @@ class _HomeScreenState extends State<HomeScreen> {
               ///================ HEADER =================
               Row(
                 children: [
-                  Container(
-                    height: 55,
-                    width: 55,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          UserSession.currentUser?.avatar ??
-                              'https://i.pravatar.cc/150',
+                  ValueListenableBuilder<UserModel?>(
+                    valueListenable: UserSession.currentUserNotifier,
+                    builder: (context, user, child) {
+                      return Container(
+                        height: 55,
+                        width: 55,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          image: DecorationImage(
+                            image: _avatarProvider(
+                              user?.avatar,
+                              fallback: 'https://i.pravatar.cc/150',
+                            ),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                      );
+                    },
                   ),
 
                   const SizedBox(width: 15),
@@ -127,12 +146,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         const SizedBox(height: 4),
 
-                        Text(
-                          UserSession.currentUser?.name ?? 'Guest',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                          ),
+                        ValueListenableBuilder<UserModel?>(
+                          valueListenable: UserSession.currentUserNotifier,
+                          builder: (context, user, child) {
+                            return Text(
+                              user?.name ?? 'Guest',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

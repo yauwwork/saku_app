@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_model.dart';
@@ -8,7 +9,10 @@ class UserSession {
   UserSession._();
 
   static const _prefsKey = 'current_user';
-  static UserModel? currentUser;
+  static final ValueNotifier<UserModel?> currentUserNotifier = ValueNotifier(null);
+
+  static UserModel? get currentUser => currentUserNotifier.value;
+  static set currentUser(UserModel? value) => currentUserNotifier.value = value;
 
   static bool get isLoggedIn => currentUser != null;
 
@@ -18,6 +22,8 @@ class UserSession {
     if (jsonString != null && jsonString.isNotEmpty) {
       final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
       currentUser = UserModel.fromJson(jsonMap);
+    } else {
+      currentUser = null;
     }
   }
 
